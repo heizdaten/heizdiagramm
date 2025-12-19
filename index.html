@@ -2,26 +2,40 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>Temperatur Diagramm</title>
+<title>Heizung Temperaturen</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
-<h2>Temperaturen</h2>
-<canvas id="chart"></canvas>
+<h2>Temperaturverlauf (7 Tage)</h2>
+<a href="https://drive.google.com/uc?export=download&id=CSV_ID" download>
+CSV herunterladen
+</a>
+
+<canvas id="c"></canvas>
 
 <script>
-const labels = ["00:00","03:00","06:00","09:00","12:00"];
-const t1 = [20.1,20.3,20.8,21.2,21.5];
-
-new Chart(chart,{
-  type:'line',
-  data:{
-    labels,
-    datasets:[
-      {label:'Sensor 1',data:t1}
-    ]
-  }
+fetch("https://drive.google.com/uc?export=download&id=CSV_ID")
+.then(r=>r.text())
+.then(t=>{
+  let l=[],d=[[],[],[],[]];
+  t.trim().split("\n").slice(1).forEach(r=>{
+    let c=r.split(",");
+    l.push(c[0]);
+    for(let i=0;i<4;i++) d[i].push(c[i+1]);
+  });
+  new Chart(c,{
+    type:"line",
+    data:{
+      labels:l,
+      datasets:[
+        {label:"T1",data:d[0]},
+        {label:"T2",data:d[1]},
+        {label:"T3",data:d[2]},
+        {label:"T4",data:d[3]}
+      ]
+    }
+  });
 });
 </script>
 
