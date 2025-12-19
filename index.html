@@ -2,42 +2,54 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>Heizung Temperaturen</title>
+<title>Heizung – Temperaturverlauf</title>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  margin: 20px;
+}
+canvas {
+  max-width: 100%;
+}
+</style>
 </head>
+
 <body>
 
-<h2>Temperaturverlauf (7 Tage)</h2>
-<a href="https://drive.google.com/uc?export=download&id=CSV_ID" download>
-CSV herunterladen
-</a>
+<h2>Heizung – letzte 7 Tage</h2>
 
-<canvas id="c"></canvas>
+<p>
+  <a href="https://drive.google.com/uc?export=download&id=CSV_ID"
+     target="_blank" download>
+     ⬇ CSV herunterladen
+  </a>
+</p>
+
+<canvas id="chart"></canvas>
 
 <script>
-fetch("https://drive.google.com/uc?export=download&id=CSV_ID")
-.then(r=>r.text())
-.then(t=>{
-  let l=[],d=[[],[],[],[]];
-  t.trim().split("\n").slice(1).forEach(r=>{
-    let c=r.split(",");
-    l.push(c[0]);
-    for(let i=0;i<4;i++) d[i].push(c[i+1]);
-  });
-  new Chart(c,{
-    type:"line",
-    data:{
-      labels:l,
-      datasets:[
-        {label:"T1",data:d[0]},
-        {label:"T2",data:d[1]},
-        {label:"T3",data:d[2]},
-        {label:"T4",data:d[3]}
-      ]
-    }
-  });
-});
-</script>
+const csvUrl = "https://drive.google.com/uc?export=download&id=CSV_ID";
 
-</body>
-</html>
+fetch(csvUrl)
+  .then(r => r.text())
+  .then(text => {
+    const lines = text.trim().split("\n").slice(1);
+
+    let labels = [];
+    let t1 = [], t2 = [], t3 = [], t4 = [];
+
+    lines.forEach(l => {
+      const c = l.split(",");
+      labels.push(c[0]);
+      t1.push(parseFloat(c[1]));
+      t2.push(parseFloat(c[2]));
+      t3.push(parseFloat(c[3]));
+      t4.push(parseFloat(c[4]));
+    });
+
+    new Chart(document.getElementById("chart"), {
+      type: "line",
+      data:
