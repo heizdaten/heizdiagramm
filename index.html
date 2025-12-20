@@ -5,16 +5,6 @@
 <title>Heizung – Temperaturverlauf</title>
 
 <script src="chart1.js"></script>
-
-<style>
-body {
-  font-family: Arial, sans-serif;
-  margin: 20px;
-}
-canvas {
-  max-width: 100%;
-}
-</style>
 </head>
 
 <body>
@@ -22,34 +12,44 @@ canvas {
 <h2>Heizung – letzte 7 Tage</h2>
 
 <p>
-  <a href="https://script.google.com/macros/s/AKfycbzCfO_a0-IU6QIj3i2yF6ZwdwOxwToCLkT0aQHKXhLyNdRcarK73ov1Pj0fDHYJYzG1aA/exec"
-     target="_blank" download>
-     ⬇ CSV herunterladen
-  </a>
+<a href="https://script.google.com/macros/s/AKfycbzCfO_a0-IU6QIj3i2yF6ZwdwOxwToCLkT0aQHKXhLyNdRcarK73ov1Pj0fDHYJYzG1aA/exec" download>
+⬇ CSV herunterladen
+</a>
 </p>
 
 <canvas id="chart"></canvas>
 
 <script>
-const csvUrl = "https://script.google.com/macros/s/AKfycbzCfO_a0-IU6QIj3i2yF6ZwdwOxwToCLkT0aQHKXhLyNdRcarK73ov1Pj0fDHYJYzG1aA/exec";
+fetch("https://script.google.com/macros/s/AKfycbzCfO_a0-IU6QIj3i2yF6ZwdwOxwToCLkT0aQHKXhLyNdRcarK73ov1Pj0fDHYJYzG1aA/exec")
+.then(r => r.text())
+.then(text => {
+  const lines = text.trim().split("\n").slice(1);
 
-fetch(csvUrl)
-  .then(r => r.text())
-  .then(text => {
-    const lines = text.trim().split("\n").slice(1);
+  let labels = [], t1 = [], t2 = [], t3 = [], t4 = [];
 
-    let labels = [];
-    let t1 = [], t2 = [], t3 = [], t4 = [];
+  lines.forEach(l => {
+    const c = l.split(",");
+    labels.push(c[0]);
+    t1.push(parseFloat(c[1]));
+    t2.push(parseFloat(c[2]));
+    t3.push(parseFloat(c[3]));
+    t4.push(parseFloat(c[4]));
+  });
 
-    lines.forEach(l => {
-      const c = l.split(",");
-      labels.push(c[0]);
-      t1.push(parseFloat(c[1]));
-      t2.push(parseFloat(c[2]));
-      t3.push(parseFloat(c[3]));
-      t4.push(parseFloat(c[4]));
-    });
+  new Chart(document.getElementById("chart"), {
+    type: "line",
+    data: {
+      labels: labels,
+      datasets: [
+        { label: "Sensor 1", data: t1 },
+        { label: "Sensor 2", data: t2 },
+        { label: "Sensor 3", data: t3 },
+        { label: "Sensor 4", data: t4 }
+      ]
+    }
+  });
+});
+</script>
 
-    new Chart(document.getElementById("chart"), {
-      type: "line",
-      data:
+</body>
+</html>
