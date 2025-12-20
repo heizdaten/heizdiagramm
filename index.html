@@ -11,6 +11,14 @@
 
 <h2>Heizung – letzte 7 Tage</h2>
 
+  <label for="anzahl">Angezeigte Werte:</label>
+<select id="anzahl">
+  <option value="96">96 (1 Tag)</option>
+  <option value="192">192 (2 Tage)</option>
+  <option value=384">384 (4 Tage)</option>
+  <option value="672" selected>672 (7 Tage)</option>
+</select>
+
 <p>
 <a href="https://script.google.com/macros/s/AKfycbzCfO_a0-IU6QIj3i2yF6ZwdwOxwToCLkT0aQHKXhLyNdRcarK73ov1Pj0fDHYJYzG1aA/exec" download>
 ⬇ CSV herunterladen
@@ -20,36 +28,72 @@
 <canvas id="chart"></canvas>
 
 <script>
-fetch("https://script.google.com/macros/s/AKfycbzCfO_a0-IU6QIj3i2yF6ZwdwOxwToCLkT0aQHKXhLyNdRcarK73ov1Pj0fDHYJYzG1aA/exec")
+let allData = [];
+let chart;
+
+fetch("https://script.google.com/macros/s/DEINE_ID/exec")
 .then(r => r.text())
 .then(text => {
-  const lines = text.trim().split("\n").slice(1);
+
+  allData = text.trim().split("\n").slice(1);
+  drawChart(672);   // Startwert
+});
+
+document.getElementById("anzahl").addEventListener("change", e => {
+  drawChart(parseInt(e.target.value));
+});
+
+function drawChart(count) {
+
+  const data = allData.slice(-count);
 
   let labels = [], t1 = [], t2 = [], t3 = [], t4 = [];
 
-  lines.forEach(l => {
+  data.forEach(l => {
     const c = l.split(",");
     labels.push(c[0]);
-    t1.push(parseFloat(c[1]));
-    t2.push(parseFloat(c[2]));
-    t3.push(parseFloat(c[3]));
-    t4.push(parseFloat(c[4]));
+    t1.push(+c[1]);
+    t2.push(+c[2]);
+    t3.push(+c[3]);
+    t4.push(+c[4]);
   });
 
-  new Chart(document.getElementById("chart"), {
+  if (chart) chart.destroy();
+
+  chart = new Chart(document.getElementById("chart"), {
     type: "line",
     data: {
-      labels: labels,
+      labels,
       datasets: [
-        { label: "Vorlauf 1", data: t1 },
-        { label: "Rücklauf 2", data: t2 },
-        { label: "Außen 3", data: t3 },
-        { label: "Raum 4", data: t4 }
+        { label: "Vorlauf", data: t1, borderColor: "green", fill: false },
+        { label: "Rücklauf", data: t2, borderColor: "yellow", fill: false },
+        { label: "Außen", data: t3, borderColor: "blue", fill: false },
+        { label: "Speicher", data: t4, borderColor: "orange", fill: false }
       ]
+    },
+    options: {
+      responsive: true,
+      interaction: { mode: "index", intersect: false },
+      plugins: {
+        zoom: {
+          pan: { enabled: true, mode: "x" },
+          zoom: {
+            wheel: { enabled: true },
+            pinch: { enabled: true },
+            mode: "x"
+          }
+        }
+      },
+      scales: {
+        y: {
+          title: { display: true, text: "°C" }
+        }
+      }
     }
   });
-});
+}
 </script>
+
 
 </body>
 </html>
