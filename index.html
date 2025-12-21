@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>Heizung – Temperaturverlauf</title>
+<title>Fernwärme – Temperaturverlauf Meßintervall 15 Min</title>
 
 <script src="chart1.js"></script>
 <script src="chartjs-plugin-zoom.min.js"></script>
@@ -11,14 +11,12 @@
 
 <body>
 
-<h2>Heizung – letzte 7 Tage</h2>
-
-  <label for="anzahl">Angezeigte Werte:</label>
+<h2>Fernwärme – Temperaturverlauf °C  Meßintervall: 15 Min</h2> <h2><label for="anzahl">Angezeigte Tage:</label><h2>
 <select id="anzahl">
-  <option value="96">96 (1 Tag)</option>
-  <option value="192">192 (2 Tage)</option>
-  <option value=384">384 (4 Tage)</option>
-  <option value="672" selected>672 (7 Tage)</option>
+  <option value="96">1 Tag <selected></option>
+  <option value="192">2 Tage</option>
+  <option value=384">4 Tage</option>
+  <option value="672">7 Tage</option>
 </select>
 
 <p>
@@ -68,9 +66,9 @@ function drawChart(count) {
       labels,
       datasets: [
         { label: "Vorlauf", data: t1, borderColor: "green", fill: false },
-        { label: "Rücklauf", data: t2, borderColor: "yellow", fill: false },
-        { label: "Außen", data: t3, borderColor: "blue", fill: false },
-        { label: "Speicher", data: t4, borderColor: "orange", fill: false }
+        { label: "Rücklauf", data: t4, borderColor: "yellow", fill: false },
+        { label: "Außen", data: t2, borderColor: "blue", fill: false },
+        { label: "Raum", data: t3, borderColor: "orange", fill: false }
       ]
     },
     options: {
