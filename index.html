@@ -45,18 +45,19 @@ function drawChart(count) {
 
   const data = allData.slice(-count);
 
-  let labels = [], t1 = [], t2 = [], t3 = [], t4 = [];
+ let labels = [], t1 = [], t2 = [], t3 = [], t4 = [];
 
-  data.forEach(l => {
-    const c = l.split(",");
-const [date, time] = c[0].split(" ");
-labels.push({ date, time });
+data.forEach(l => {
+  const c = l.split(",");
+  const [date, time] = c[0].split(" ");
 
-    t1.push(+c[1]);
-    t2.push(+c[2]);
-    t3.push(+c[3]);
-    t4.push(+c[4]);
-  });
+  labels.push({ date, time });
+  t1.push(+c[1]);
+  t2.push(+c[2]);
+  t3.push(+c[3]);
+  t4.push(+c[4]);
+});
+
 
   if (chart) chart.destroy();
 
