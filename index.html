@@ -47,16 +47,16 @@ function drawChart(count) {
 
  let labels = [], t1 = [], t2 = [], t3 = [], t4 = [];
 
-data.forEach(l => {
-  const c = l.split(",");
-  const [date, time] = c[0].split(" ");
-
-  labels.push({ date, time });
-  t1.push(+c[1]);
-  t2.push(+c[2]);
-  t3.push(+c[3]);
-  t4.push(+c[4]);
-});
+  data.forEach(l => {
+    const c = l.split(",");
+    const [date, time] = c[0].split(" ");
+  
+    labels.push({ date, time });
+    t1.push(+c[1]);
+    t2.push(+c[2]);
+    t3.push(+c[3]);
+    t4.push(+c[4]);
+  });
 
 
   if (chart) chart.destroy();
@@ -87,47 +87,47 @@ data.forEach(l => {
       }
         
    scales: {
-  x: {
-    ticks: {
-      callback: function(value, index) {
-        const current = labels[index];
-        const prev = labels[index - 1];
-
-        // erstes Label → Datum anzeigen
-        if (!prev || current.date !== prev.date) {
-          const d = current.date.split("-");
-          return `${d[2]}.${d[1]}.${d[0]}\n${current.time}`;
-        }
-
-        // sonst nur Zeit
-        return current.time;
-      },
-      maxRotation: 0,
-      autoSkip: true,
-      maxTicksLimit: 12
-    }
-  },
- y: {
-    position: "left",
-    title: {
-      display: true,
-      text: "Temperatur °C"
-    }
-  },
-
-  y1: {
-    position: "right",
-    title: {
-      display: true,
-      text: "Temperatur °C"
+    x: {
+      ticks: {
+        callback: function(value, index) {
+          const current = labels[index];
+          const prev = labels[index - 1];
+  
+          // erstes Label → Datum anzeigen
+          if (!prev || current.date !== prev.date) {
+            const d = current.date.split("-");
+            return `${d[2]}.${d[1]}.${d[0]}\n${current.time}`;
+          }
+  
+          // sonst nur Zeit
+          return current.time;
+        },
+        maxRotation: 0,
+        autoSkip: true,
+        maxTicksLimit: 12
+      }
     },
-    grid: {
-      drawOnChartArea: false   // 👈 verhindert doppelte Gitterlinien
+   y: {
+      position: "left",
+      title: {
+        display: true,
+        text: "Temperatur °C"
+      }
+    },
+  
+    y1: {
+      position: "right",
+      title: {
+        display: true,
+        text: "Temperatur °C"
+      },
+      grid: {
+        drawOnChartArea: false   // 👈 verhindert doppelte Gitterlinien
+      }
     }
   }
-}
 
-  });
+};
 
 </script>
 <p>
