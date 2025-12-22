@@ -49,7 +49,9 @@ function drawChart(count) {
 
   data.forEach(l => {
     const c = l.split(",");
-    labels.push(c[0]);
+const [date, time] = c[0].split(" ");
+labels.push({ date, time });
+
     t1.push(+c[1]);
     t2.push(+c[2]);
     t3.push(+c[3]);
@@ -81,13 +83,37 @@ function drawChart(count) {
             mode: "x"
           }
         }
-      },
-      scales: {
-        y: {
-          title: { display: true, text: "°C" }
-        }
       }
+        
+   scales: {
+  x: {
+    ticks: {
+      callback: function(value, index) {
+        const current = labels[index];
+        const prev = labels[index - 1];
+
+        // erstes Label → Datum anzeigen
+        if (!prev || current.date !== prev.date) {
+          const d = current.date.split("-");
+          return `${d[2]}.${d[1]}.${d[0]}\n${current.time}`;
+        }
+
+        // sonst nur Zeit
+        return current.time;
+      },
+      maxRotation: 0,
+      autoSkip: true,
+      maxTicksLimit: 12
     }
+  },
+  y: {
+    title: {
+      display: true,
+      text: "Temperatur °C"
+    }
+  }
+}
+
   });
 }
 </script>
