@@ -138,7 +138,16 @@ function drawChart(count) {
             mode: "x"
           }
         }
+         tooltip: {
+    callbacks: {
+      title: function(context) {
+        const lbl = context[0].label;
+        const d = lbl.date.split("-");
+        return `${d[2]}.${d[1]}.${d[0]} ${lbl.time}`;
+      }
+    }
       },
+      
       scales: {
         x: {
           ticks: {
