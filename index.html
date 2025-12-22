@@ -87,46 +87,43 @@ function drawChart(count) {
       }
         
    scales: {
-    x: {
-      ticks: {
-        callback: function(value, index) {
-          const current = labels[index];
-          const prev = labels[index - 1];
-  
-          // erstes Label → Datum anzeigen
-          if (!prev || current.date !== prev.date) {
-            const d = current.date.split("-");
-            return `${d[2]}.${d[1]}.${d[0]}\n${current.time}`;
-          }
-  
-          // sonst nur Zeit
-          return current.time;
-        },
-        maxRotation: 0,
-        autoSkip: true,
-        maxTicksLimit: 12
-      }
-    },
-   y: {
-      position: "left",
-      title: {
-        display: true,
-        text: "Temperatur °C"
-      }
-    },
-  
-    y1: {
-      position: "right",
-      title: {
-        display: true,
-        text: "Temperatur °C"
+  x: {
+    ticks: {
+      callback: function(value, index) {
+        const current = labels[index];
+        const prev = labels[index - 1];
+
+        if (!prev || current.date !== prev.date) {
+          const d = current.date.split("-");
+          return `${d[2]}.${d[1]}.${d[0]}\n${current.time}`;
+        }
+        return current.time;
       },
-      grid: {
-        drawOnChartArea: false   // 👈 verhindert doppelte Gitterlinien
-      }
+      maxRotation: 0,
+      autoSkip: true,
+      maxTicksLimit: 12
+    }
+  },
+
+  y: {
+    position: "left",
+    title: {
+      display: true,
+      text: "Temperatur °C"
+    }
+  },
+
+  y1: {
+    position: "right",
+    title: {
+      display: true,
+      text: "Temperatur °C"
+    },
+    grid: {
+      drawOnChartArea: false   // 👈 verhindert doppelte Gitterlinien
     }
   }
-
+}
 };
 
 </script>
