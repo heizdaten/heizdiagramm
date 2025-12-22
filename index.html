@@ -11,18 +11,15 @@
 
 <body>
 
-<h2>Fernwärme – Temperaturverlauf °C  Meßintervall: 15 Min</h2> <h2><label for="anzahl">Angezeigte Tage:</label><h2>
+<h2>Fernwärme – Temperaturverlauf °C  Meßintervall: 15 Min</h2> <h2><label for="anzahl">Angezeigte Tage:</label>
 <select id="anzahl">
   <option value="96"selected> 1 Tag</option>
   <option value="192"> 2 Tage</option>
   <option value="384"> 4 Tage</option>
   <option value="672" > 7 Tage)</option>
-</select>
+</select><h2>
 
-<p>
-<a href="https://script.google.com/macros/s/AKfycbzCfO_a0-IU6QIj3i2yF6ZwdwOxwToCLkT0aQHKXhLyNdRcarK73ov1Pj0fDHYJYzG1aA/exec" download>
-⬇ CSV herunterladen
-</a>
+
 </p>
 
 <canvas id="chart"></canvas>
@@ -36,9 +33,10 @@ fetch("https://script.google.com/macros/s/AKfycbzCfO_a0-IU6QIj3i2yF6ZwdwOxwToCLk
 .then(text => {
 
   allData = text.trim().split("\n").slice(1);
-  drawChart(672);   // Startwert
+ 
 });
-
+  const startWert = parseInt(document.getElementById("anzahl").value);
+  drawChart(startWert);
 document.getElementById("anzahl").addEventListener("change", e => {
   drawChart(parseInt(e.target.value));
 });
@@ -67,8 +65,8 @@ function drawChart(count) {
       datasets: [
         { label: "Vorlauf", data: t1, borderColor: "green", fill: false },
         { label: "Rücklauf", data: t4, borderColor: "yellow", fill: false },
-        { label: "Außen", data: t3, borderColor: "blue", fill: false },
-        { label: "Raum", data: t2, borderColor: "orange", fill: false }
+        { label: "Außen", data: t2, borderColor: "blue", fill: false },
+        { label: "Raum", data: t3, borderColor: "orange", fill: false }
       ]
     },
     options: {
@@ -93,7 +91,10 @@ function drawChart(count) {
   });
 }
 </script>
-
+<p>
+<a href="https://script.google.com/macros/s/AKfycbzCfO_a0-IU6QIj3i2yF6ZwdwOxwToCLkT0aQHKXhLyNdRcarK73ov1Pj0fDHYJYzG1aA/exec" download>
+⬇ CSV herunterladen
+</a>
 
 </body>
 </html>
