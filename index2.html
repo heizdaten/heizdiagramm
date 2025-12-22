@@ -6,7 +6,6 @@
 
 <!-- lokale Libraries -->
 <script src="chart1.js"></script>
-//<script src="chartjs-plugin-zoom.min.js"></script>
 
 <style>
 body {
@@ -29,10 +28,10 @@ canvas {
 
 <label for="anzahl">Angezeigte Werte:</label>
 <select id="anzahl">
-  <option value="96" selected>96 (1 Tag)</option>
-  <option value="192">192 (2 Tage)</option>
-  <option value="336">336 (3,5 Tage)</option>
-  <option value="672">672 (7 Tage)</option>
+  <option value="96" selected>1 Tag</option>
+  <option value="192">2 Tage</option>
+  <option value="384">4 Tage</option>
+  <option value="672">7 Tage</option>
 </select>
 
 <p>
@@ -90,13 +89,13 @@ function drawChart(count) {
         {
           label: "Vorlauf",
           data: t1,
-          borderColor: "red",
+          borderColor: "green",
           borderWidth: 2,
           fill: false,
           yAxisID: "y"
         },
         {
-          label: "Rücklauf",
+          label: "Außen",
           data: t2,
           borderColor: "blue",
           borderWidth: 2,
@@ -104,17 +103,17 @@ function drawChart(count) {
           yAxisID: "y"
         },
         {
-          label: "Außen",
+          label: "Raum",
           data: t3,
-          borderColor: "green",
+          borderColor: "orange",
           borderWidth: 2,
           fill: false,
           yAxisID: "y"
         },
         {
-          label: "Speicher",
+          label: "Rücklauf",
           data: t4,
-          borderColor: "orange",
+          borderColor: "yellow",
           borderWidth: 2,
           fill: false,
           yAxisID: "y"
