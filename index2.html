@@ -143,20 +143,30 @@ function drawChart(count) {
       
       scales: {
         x: {
-          ticks: {
-            callback: function(value, index) {
-              const current = labels[index];
-              const prev = labels[index - 1];
+  ticks: {
+  callback: function(value, index) {
 
-              if (!prev || current.date !== prev.date) {
-                const d = current.date.split("-");
-                return `${d[2]}.${d[1]}.${d[0]}\n${current.time}`;
-              }
-              return current.time;
-            },
-            autoSkip: true,
-            maxTicksLimit: 12
-          }
+    // Set für bereits angezeigte Datumswerte
+    if (!this._shownDates) this._shownDates = new Set();
+
+    const lbl = labels[index];
+    const date = lbl.date;
+    const time = lbl.time;
+
+    // Datum noch nicht angezeigt → jetzt anzeigen
+    if (!this._shownDates.has(date)) {
+      this._shownDates.add(date);
+      const d = date.split("-");
+      return `${d[2]}.${d[1]}.${d[0]}\n${time}`;
+    }
+
+    // sonst nur Uhrzeit
+    return time;
+  },
+  autoSkip: true,
+  maxTicksLimit: 12
+}
+
         },
         y: {
           position: "left",
