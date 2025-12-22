@@ -2,22 +2,182 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>Diagramm</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<title>Heizung – Temperaturverlauf</title>
+
+<!-- lokale Libraries -->
+<script src="chart.js"></script>
+<script src="chartjs-plugin-zoom.min.js"></script>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  margin: 20px;
+}
+select {
+  font-size: 1em;
+  margin-bottom: 10px;
+}
+canvas {
+  max-width: 100%;
+}
+</style>
 </head>
+
 <body>
 
-<h2>Temperatur</h2>
+<h2>Heizung – Temperaturverlauf</h2>
+
+<label for="anzahl">Angezeigte Werte:</label>
+<select id="anzahl">
+  <option value="96" selected>96 (1 Tag)</option>
+  <option value="192">192 (2 Tage)</option>
+  <option value="336">336 (3,5 Tage)</option>
+  <option value="672">672 (7 Tage)</option>
+</select>
+
+<p>
+<a href="https://script.google.com/macros/s/DEINE_ID/exec" download>
+⬇ CSV herunterladen
+</a>
+</p>
+
 <canvas id="chart"></canvas>
 
 <script>
-new Chart(chart,{
-  type:'line',
-  data:{
-    labels:["0","1","2","3","4"],
-    datasets:[{label:"Sensor",data:[20,21,22,23,22]}]
-  }
+let allData = [];
+let chart;
+
+// CSV laden
+fetch("https://script.google.com/macros/s/DEINE_ID/exec")
+.then(r => r.text())
+.then(text => {
+  allData = text.trim().split("\n").slice(1);
+
+  // Startwert aus Dropdown lesen (z. B. 96)
+  const startWert = parseInt(document.getElementById("anzahl").value);
+  drawChart(startWert);
 });
+
+// Dropdown-Änderung
+document.getElementById("anzahl").addEventListener("change", e => {
+  drawChart(parseInt(e.target.value));
+});
+
+function drawChart(count) {
+
+  const data = allData.slice(-count);
+
+  let labels = [], t1 = [], t2 = [], t3 = [], t4 = [];
+
+  data.forEach(l => {
+    const c = l.split(",");
+    const [date, time] = c[0].split(" ");
+
+    labels.push({ date, time });
+    t1.push(+c[1]);
+    t2.push(+c[2]);
+    t3.push(+c[3]);
+    t4.push(+c[4]);
+  });
+
+  if (chart) chart.destroy();
+
+  chart = new Chart(document.getElementById("chart"), {
+    type: "line",
+    data: {
+      labels,
+      datasets: [
+        {
+          label: "Vorlauf",
+          data: t1,
+          borderColor: "red",
+          borderWidth: 2,
+          fill: false,
+          yAxisID: "y"
+        },
+        {
+          label: "Rücklauf",
+          data: t2,
+          borderColor: "blue",
+          borderWidth: 2,
+          fill: false,
+          yAxisID: "y"
+        },
+        {
+          label: "Außen",
+          data: t3,
+          borderColor: "green",
+          borderWidth: 2,
+          fill: false,
+          yAxisID: "y"
+        },
+        {
+          label: "Speicher",
+          data: t4,
+          borderColor: "orange",
+          borderWidth: 2,
+          fill: false,
+          yAxisID: "y"
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      interaction: {
+        mode: "index",
+        intersect: false
+      },
+      plugins: {
+        zoom: {
+          pan: {
+            enabled: true,
+            mode: "x"
+          },
+          zoom: {
+            wheel: { enabled: true },
+            pinch: { enabled: true },
+            mode: "x"
+          }
+        }
+      },
+      scales: {
+        x: {
+          ticks: {
+            callback: function(value, index) {
+              const current = labels[index];
+              const prev = labels[index - 1];
+
+              if (!prev || current.date !== prev.date) {
+                const d = current.date.split("-");
+                return `${d[2]}.${d[1]}.${d[0]}\n${current.time}`;
+              }
+              return current.time;
+            },
+            autoSkip: true,
+            maxTicksLimit: 12
+          }
+        },
+        y: {
+          position: "left",
+          title: {
+            display: true,
+            text: "Temperatur °C"
+          }
+        },
+        y1: {
+          position: "right",
+          title: {
+            display: true,
+            text: "Temperatur °C"
+          },
+          grid: {
+            drawOnChartArea: false
+          }
+        }
+      }
+    }
+  });
+}
 </script>
 
 </body>
