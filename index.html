@@ -107,16 +107,28 @@ data.forEach(l => {
       maxTicksLimit: 12
     }
   },
-  y: {
+ y: {
+    position: "left",
     title: {
       display: true,
       text: "Temperatur °C"
+    }
+  },
+
+  y1: {
+    position: "right",
+    title: {
+      display: true,
+      text: "Temperatur °C"
+    },
+    grid: {
+      drawOnChartArea: false   // 👈 verhindert doppelte Gitterlinien
     }
   }
 }
 
   });
-}
+
 </script>
 <p>
 <a href="https://script.google.com/macros/s/AKfycbzCfO_a0-IU6QIj3i2yF6ZwdwOxwToCLkT0aQHKXhLyNdRcarK73ov1Pj0fDHYJYzG1aA/exec" download>
