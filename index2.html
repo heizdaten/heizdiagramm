@@ -42,20 +42,23 @@ canvas {
 </p>
 
 <canvas id="chart"></canvas>
+
 <script>
 let allData = [];
 let chart;
 
+// CSV laden
 fetch("https://script.google.com/macros/s/AKfycbzCfO_a0-IU6QIj3i2yF6ZwdwOxwToCLkT0aQHKXhLyNdRcarK73ov1Pj0fDHYJYzG1aA/exec")
 .then(r => r.text())
 .then(text => {
   allData = text.trim().split("\n").slice(1);
 
-  // 👇 IMMER den aktuellen Dropdown-Wert benutzen
+  // Startwert aus Dropdown lesen (z. B. 96)
   const startWert = parseInt(document.getElementById("anzahl").value);
   drawChart(startWert);
 });
 
+// Dropdown-Änderung
 document.getElementById("anzahl").addEventListener("change", e => {
   drawChart(parseInt(e.target.value));
 });
@@ -68,7 +71,9 @@ function drawChart(count) {
 
   data.forEach(l => {
     const c = l.split(",");
-    labels.push(c[0]);
+    const [date, time] = c[0].split(" ");
+
+    labels.push({ date, time });
     t1.push(+c[1]);
     t2.push(+c[2]);
     t3.push(+c[3]);
@@ -82,18 +87,52 @@ function drawChart(count) {
     data: {
       labels,
       datasets: [
-        { label: "Vorlauf", data: t1, borderColor: "red", fill: false },
-        { label: "Rücklauf", data: t2, borderColor: "blue", fill: false },
-        { label: "Außen", data: t3, borderColor: "green", fill: false },
-        { label: "Speicher", data: t4, borderColor: "orange", fill: false }
+        {
+          label: "Vorlauf",
+          data: t1,
+          borderColor: "red",
+          borderWidth: 2,
+          fill: false,
+          yAxisID: "y"
+        },
+        {
+          label: "Rücklauf",
+          data: t2,
+          borderColor: "blue",
+          borderWidth: 2,
+          fill: false,
+          yAxisID: "y"
+        },
+        {
+          label: "Außen",
+          data: t3,
+          borderColor: "green",
+          borderWidth: 2,
+          fill: false,
+          yAxisID: "y"
+        },
+        {
+          label: "Speicher",
+          data: t4,
+          borderColor: "orange",
+          borderWidth: 2,
+          fill: false,
+          yAxisID: "y"
+        }
       ]
     },
     options: {
       responsive: true,
-      interaction: { mode: "index", intersect: false },
+      interaction: {
+        mode: "index",
+        intersect: false
+      },
       plugins: {
         zoom: {
-          pan: { enabled: true, mode: "x" },
+          pan: {
+            enabled: true,
+            mode: "x"
+          },
           zoom: {
             wheel: { enabled: true },
             pinch: { enabled: true },
@@ -102,8 +141,38 @@ function drawChart(count) {
         }
       },
       scales: {
+        x: {
+          ticks: {
+            callback: function(value, index) {
+              const current = labels[index];
+              const prev = labels[index - 1];
+
+              if (!prev || current.date !== prev.date) {
+                const d = current.date.split("-");
+                return `${d[2]}.${d[1]}.${d[0]}\n${current.time}`;
+              }
+              return current.time;
+            },
+            autoSkip: true,
+            maxTicksLimit: 12
+          }
+        },
         y: {
-          title: { display: true, text: "°C" }
+          position: "left",
+          title: {
+            display: true,
+            text: "Temperatur °C"
+          }
+        },
+        y1: {
+          position: "right",
+          title: {
+            display: true,
+            text: "Temperatur °C"
+          },
+          grid: {
+            drawOnChartArea: false
+          }
         }
       }
     }
@@ -111,3 +180,5 @@ function drawChart(count) {
 }
 </script>
 
+</body>
+</html>
