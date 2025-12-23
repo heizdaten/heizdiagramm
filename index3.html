@@ -5,7 +5,8 @@
 <title>Heizung – Temperaturverlauf3</title>
 
 <!-- lokale Libraries -->
-<script src="chart1.js"></script>
+<script src="chart.js"></script>
+<script src="chartjs-plugin-zoom.min.js"></script>
 
 <style>
 body {
@@ -28,10 +29,10 @@ canvas {
 
 <label for="anzahl">Angezeigte Werte:</label>
 <select id="anzahl">
-  <option value="96" selected>1 Tag</option>
-  <option value="192">2 Tage</option>
-  <option value="384">4 Tage</option>
-  <option value="672">7 Tage</option>
+  <option value="96" selected>96 (1 Tag)</option>
+  <option value="192">192 (2 Tage)</option>
+  <option value="336">336 (3,5 Tage)</option>
+  <option value="672">672 (7 Tage)</option>
 </select>
 
 <p>
@@ -89,13 +90,13 @@ function drawChart(count) {
         {
           label: "Vorlauf",
           data: t1,
-          borderColor: "green",
+          borderColor: "red",
           borderWidth: 2,
           fill: false,
           yAxisID: "y"
         },
         {
-          label: "Außen",
+          label: "Rücklauf",
           data: t2,
           borderColor: "blue",
           borderWidth: 2,
@@ -103,17 +104,17 @@ function drawChart(count) {
           yAxisID: "y"
         },
         {
-          label: "Raum",
+          label: "Außen",
           data: t3,
-          borderColor: "orange",
+          borderColor: "green",
           borderWidth: 2,
           fill: false,
           yAxisID: "y"
         },
         {
-          label: "Rücklauf",
+          label: "Speicher",
           data: t4,
-          borderColor: "yellow",
+          borderColor: "orange",
           borderWidth: 2,
           fill: false,
           yAxisID: "y"
@@ -138,35 +139,23 @@ function drawChart(count) {
             mode: "x"
           }
         }
-      
       },
-      
       scales: {
         x: {
-  ticks: {
-  callback: function(value, index) {
+          ticks: {
+            callback: function(value, index) {
+              const current = labels[index];
+              const prev = labels[index - 1];
 
-    // Set für bereits angezeigte Datumswerte
-    if (!this._shownDates) this._shownDates = new Set();
-
-    const lbl = labels[index];
-    const date = lbl.date;
-    const time = lbl.time;
-
-    // Datum noch nicht angezeigt → jetzt anzeigen
-    if (!this._shownDates.has(date)) {
-      this._shownDates.add(date);
-      const d = date.split("-");
-      return `${d[2]}.${d[1]}.${d[0]}\n${time}`;
-    }
-
-    // sonst nur Uhrzeit
-    return time;
-  },
-  autoSkip: true,
-  maxTicksLimit: 12
-}
-
+              if (!prev || current.date !== prev.date) {
+                const d = current.date.split("-");
+                return `${d[2]}.${d[1]}.${d[0]}\n${current.time}`;
+              }
+              return current.time;
+            },
+            autoSkip: true,
+            maxTicksLimit: 12
+          }
         },
         y: {
           position: "left",
