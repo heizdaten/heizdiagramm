@@ -143,15 +143,14 @@ function drawChart(count) {
       scales: {
         x: {
           ticks: {
-            callback: function(value, index) {
-              const current = labels[index];
-              const prev = labels[index - 1];
-
-              if (!prev || current.date !== prev.date) {
-                const d = current.date.split("-");
-                return `${d[2]}.${d[1]}.${d[0]}\n${current.time}`;
+         callback: function(value, index) {
+              const lbl = labels[index];
+        
+              if (index === 0) {
+                const d = lbl.date.split("-");
+                return `${d[2]}.${d[1]}.${d[0]}\n${lbl.time}`;
               }
-              return current.time;
+              return lbl.time;
             },
             autoSkip: true,
             maxTicksLimit: 12
