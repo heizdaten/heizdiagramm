@@ -2,10 +2,11 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>Heizung – Temperaturverlauf3</title>
+<title>Heizung – Temperaturverlauf</title>
 
 <!-- lokale Libraries -->
 <script src="chart1.js"></script>
+<script src="chartjs-plugin-zoom.min.js"></script>
 
 <style>
 body {
@@ -47,7 +48,7 @@ let allData = [];
 let chart;
 
 // CSV laden
-fetch("https://script.google.com/macros/s/AKfycbzCfO_a0-IU6QIj3i2yF6ZwdwOxwToCLkT0aQHKXhLyNdRcarK73ov1Pj0fDHYJYzG1aA/exec")
+fetch("https://script.google.com/macros/s/AKfycbzCfO_a0-IU6QIj3i2yF6ZwdwOxwToCLkT0aQHKXhLyNdRcarK73ov1Pj0fDHYJYzG1aA/exe")
 .then(r => r.text())
 .then(text => {
   allData = text.trim().split("\n").slice(1);
@@ -142,27 +143,18 @@ function drawChart(count) {
       scales: {
         x: {
           ticks: {
-callback: function(value, index) {
+            callback: function(value, index) {
+              const current = labels[index];
+              const prev = labels[index - 1];
 
-    // Set für bereits angezeigte Datumswerte
-    if (!this._shownDates) this._shownDates = new Set();
-
-    const lbl = labels[index];
-    const date = lbl.date;
-    const time = lbl.time;
-
-    // Datum noch nicht angezeigt → jetzt anzeigen
-    if (!this._shownDates.has(date)) {
-      this._shownDates.add(date);
-      const d = date.split("-");
-      return `${d[2]}.${d[1]}.${d[0]}\n${time}`;
-    }
-
-    // sonst nur Uhrzeit
-    return time;
-  },
-  autoSkip: true,
-  maxTicksLimit: 12
+              if (!prev || current.date !== prev.date) {
+                const d = current.date.split("-");
+                return `${d[2]}.${d[1]}.${d[0]}\n${current.time}`;
+              }
+              return current.time;
+            },
+            autoSkip: true,
+            maxTicksLimit: 12
           }
         },
         y: {
