@@ -66,7 +66,7 @@ function drawChart(count) {
 
   const data = allData.slice(-count);
 
-  let labels = [], t1 = [], t2 = [], t3 = [], t4 = [];
+  let labels = [], t1 = [], t2 = [], t3 = [], t4 = [],t5 = [];
 
   data.forEach(l => {
     const c = l.split(",");
@@ -77,6 +77,7 @@ function drawChart(count) {
     t2.push(+c[2]);
     t3.push(+c[3]);
     t4.push(+c[4]);
+    t5.push(+c[5]);
   });
 
   if (chart) chart.destroy();
@@ -119,7 +120,7 @@ function drawChart(count) {
           yAxisID: "y"
         }
         {
-          label: "Rücklauf",
+          label: "VorlaufHaus",
           data: t5,
           borderColor: "red",
           borderWidth: 2,
