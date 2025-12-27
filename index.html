@@ -34,6 +34,20 @@ canvas {
   <option value="672">7 Tage</option>
 </select>
 
+<div id="sensorToggle">
+  <label><input type="checkbox" checked data-ds="0"> Vorlauf</label>
+  <label><input type="checkbox" checked data-ds="1"> Rücklauf</label>
+  <label><input type="checkbox" checked data-ds="4"> VorlaufHaus</label>
+  <label><input type="checkbox" checked data-ds="2"> Raum</label>
+  <label><input type="checkbox" checked data-ds="3"> Außen</label>  
+</div>
+
+<style>
+#sensorToggle label {
+  margin-right: 15px;
+}
+</style>
+  
 <p>
 <a href="https://script.google.com/macros/s/AKfycbwfdzTyieJE5TPkCQD1tmH6kQK0OLaSmrcBzFN1MbX1ziAI6wHQ7MwOPN9KO8L73JZfrw/exec" download>
 ⬇ CSV herunterladen
@@ -67,6 +81,10 @@ function drawChart(count) {
   const data = allData.slice(-count);
 
   let labels = [], t1 = [], t2 = [], t3 = [], t4 = [],t5 = [];
+let visibility = [];
+if (chart) {
+  visibility = chart.data.datasets.map(ds => chart.isDatasetVisible(ds));
+}
 
   data.forEach(l => {
     const c = l.split(",");
@@ -197,9 +215,21 @@ function drawChart(count) {
         }
       }
     }
+    visibility.forEach((v, i) => {
+  chart.setDatasetVisibility(i, v);
+});
+chart.update();
+
   });
 }
 </script>
+document.querySelectorAll('#sensorToggle input').forEach(cb => {
+  cb.addEventListener('change', function () {
+    const dsIndex = parseInt(this.dataset.ds);
+    chart.setDatasetVisibility(dsIndex, this.checked);
+    chart.update();
+  });
+});
 
 </body>
 </html>
