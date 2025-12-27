@@ -2,24 +2,42 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>Fernwärme – Temperaturverlauf Meßintervall 15 Min</title>
+<title>Heizung – Temperaturverlauf</title>
 
+<!-- lokale Libraries -->
 <script src="chart1.js"></script>
-//<script src="chartjs-plugin-zoom.min.js"></script>
 
+<style>
+body {
+  font-family: Arial, sans-serif;
+  margin: 20px;
+}
+select {
+  font-size: 1em;
+  margin-bottom: 10px;
+}
+canvas {
+  max-width: 100%;
+}
+</style>
 </head>
 
 <body>
 
-<h2>Fernwärme – Temperaturverlauf °C  Meßintervall: 15 Min</h2> <h2><label for="anzahl">Angezeigte Tage:</label>
+<h2>Heizung – Temperaturverlauf</h2>
+
+<label for="anzahl">Angezeigte Werte:</label>
 <select id="anzahl">
-  <option value="96"selected> 1 Tag</option>
-  <option value="192"> 2 Tage</option>
-  <option value="384"> 4 Tage</option>
-  <option value="672" > 7 Tage)</option>
-</select><h2>
+  <option value="96" selected>1 Tag</option>
+  <option value="192">2 Tage</option>
+  <option value="384">4 Tage</option>
+  <option value="672">7 Tage</option>
+</select>
 
-
+<p>
+<a href="https://script.google.com/macros/s/AKfycbwfdzTyieJE5TPkCQD1tmH6kQK0OLaSmrcBzFN1MbX1ziAI6wHQ7MwOPN9KO8L73JZfrw/exec" download>
+⬇ CSV herunterladen
+</a>
 </p>
 
 <canvas id="chart"></canvas>
@@ -28,15 +46,18 @@
 let allData = [];
 let chart;
 
+// CSV laden
 fetch("https://script.google.com/macros/s/AKfycbwfdzTyieJE5TPkCQD1tmH6kQK0OLaSmrcBzFN1MbX1ziAI6wHQ7MwOPN9KO8L73JZfrw/exec")
 .then(r => r.text())
 .then(text => {
-
   allData = text.trim().split("\n").slice(1);
+
+  // Startwert aus Dropdown lesen (z. B. 96)
   const startWert = parseInt(document.getElementById("anzahl").value);
   drawChart(startWert);
 });
- 
+
+// Dropdown-Änderung
 document.getElementById("anzahl").addEventListener("change", e => {
   drawChart(parseInt(e.target.value));
 });
@@ -45,19 +66,19 @@ function drawChart(count) {
 
   const data = allData.slice(-count);
 
- let labels = [], t1 = [], t2 = [], t3 = [], t4 = [];
+  let labels = [], t1 = [], t2 = [], t3 = [], t4 = [],t5 = [];
 
   data.forEach(l => {
     const c = l.split(",");
     const [date, time] = c[0].split(" ");
-  
+
     labels.push({ date, time });
     t1.push(+c[1]);
     t2.push(+c[2]);
     t3.push(+c[3]);
     t4.push(+c[4]);
+    t5.push(+c[5]);
   });
-
 
   if (chart) chart.destroy();
 
@@ -66,71 +87,119 @@ function drawChart(count) {
     data: {
       labels,
       datasets: [
-        { label: "Vorlauf", data: t1, borderColor: "green", fill: false },
-        { label: "Rücklauf", data: t4, borderColor: "yellow", fill: false },
-        { label: "Außen", data: t2, borderColor: "blue", fill: false },
-        { label: "Raum", data: t3, borderColor: "orange", fill: false }
+        {
+          label: "Vorlauf",
+          data: t1,
+          borderColor: "green",
+          borderWidth: 2,
+          fill: false,
+          yAxisID: "y"
+        },
+       
+        {
+          label: "Rücklauf",
+          data: t4,
+          borderColor: "yellow",
+          borderWidth: 2,
+          fill: false,
+          yAxisID: "y"
+        },
+        {
+          label: "VorlaufHaus",
+          data: t5,
+          borderColor: "red",
+          borderWidth: 2,
+          fill: false,
+          yAxisID: "y"
+        },
+         {
+          label: "Raum",
+          data: t3,
+          borderColor: "orange",
+          borderWidth: 2,
+          fill: false,
+          yAxisID: "y"
+        },
+         {
+          label: "Außen",
+          data: t2,
+          borderColor: "blue",
+          borderWidth: 2,
+          fill: false,
+          yAxisID: "y"
+        },
       ]
     },
     options: {
       responsive: true,
-      interaction: { mode: "index", intersect: false },
+      interaction: {
+        mode: "index",
+        intersect: false
+      },
       plugins: {
         zoom: {
-          pan: { enabled: true, mode: "x" },
+          pan: {
+            enabled: true,
+            mode: "x"
+          },
           zoom: {
             wheel: { enabled: true },
             pinch: { enabled: true },
             mode: "x"
           }
         }
+      
+      },
+      
+      scales: {
+        x: {
+  ticks: {
+  callback: function(value, index) {
+
+    // Set für bereits angezeigte Datumswerte
+    if (!this._shownDates) this._shownDates = new Set();
+
+    const lbl = labels[index];
+    const date = lbl.date;
+    const time = lbl.time;
+
+    // Datum noch nicht angezeigt → jetzt anzeigen
+    if (!this._shownDates.has(date)) {
+      this._shownDates.add(date);
+      const d = date.split("-");
+      return `${d[2]}.${d[1]}.${d[0]}\n${time}`;
+    }
+
+    // sonst nur Uhrzeit
+    return time;
+  },
+  autoSkip: true,
+  maxTicksLimit: 12
+}
+
+        },
+        y: {
+          position: "left",
+          title: {
+            display: true,
+            text: "Temperatur °C"
+          }
+        },
+        y1: {
+          position: "right",
+          title: {
+            display: true,
+            text: "Temperatur °C"
+          },
+          grid: {
+            drawOnChartArea: false
+          }
+        }
       }
     }
-   scales: {
-  x: {
-    ticks: {
-      callback: function(value, index) {
-        const current = labels[index];
-        const prev = labels[index - 1];
-
-        if (!prev || current.date !== prev.date) {
-          const d = current.date.split("-");
-          return `${d[2]}.${d[1]}.${d[0]}\n${current.time}`;
-        }
-        return current.time;
-      },
-      maxRotation: 0,
-      autoSkip: true,
-      maxTicksLimit: 12
-    }
-  },
-
-  y: {
-    position: "left",
-    title: {
-      display: true,
-      text: "Temperatur °C"
-    }
-  },
-
-  y1: {
-    position: "right",
-    title: {
-      display: true,
-      text: "Temperatur °C"
-    },
-    grid: {
-      drawOnChartArea: false   // 👈 verhindert doppelte Gitterlinien
-    }
-  }
+  });
 }
-};
-  }
 </script>
-<p>
-<a href="https://script.google.com/macros/s/AKfycbwfdzTyieJE5TPkCQD1tmH6kQK0OLaSmrcBzFN1MbX1ziAI6wHQ7MwOPN9KO8L73JZfrw/exec" download>
-⬇ CSV herunterladen
-</a>
 
 </body>
 </html>
