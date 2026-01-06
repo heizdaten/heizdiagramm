@@ -35,7 +35,7 @@ canvas {
 </select>
 
 <p>
-<a href="https://script.google.com/macros/s/AKfycbwfdzTyieJE5TPkCQD1tmH6kQK0OLaSmrcBzFN1MbX1ziAI6wHQ7MwOPN9KO8L73JZfrw/exec" download>
+<a href="https://script.google.com/macros/s/AKfycbzraAiUlEXORhXUjHq9AmvADQlkP-offqilgcZbJmqZmWGOGCEE3yYGVS7wUdfosLRwnQ/exec" download>
 ⬇ CSV herunterladen
 </a>
 </p>
@@ -47,7 +47,7 @@ let allData = [];
 let chart;
 
 // CSV laden
-fetch("https://script.google.com/macros/s/AKfycbwfdzTyieJE5TPkCQD1tmH6kQK0OLaSmrcBzFN1MbX1ziAI6wHQ7MwOPN9KO8L73JZfrw/exec")
+fetch("https://script.google.com/macros/s/AKfycbzraAiUlEXORhXUjHq9AmvADQlkP-offqilgcZbJmqZmWGOGCEE3yYGVS7wUdfosLRwnQ/exec")
 .then(r => r.text())
 .then(text => {
   allData = text.trim().split("\n").slice(1);
@@ -99,7 +99,7 @@ function drawChart(count) {
        
         {
           label: "Rücklauf",
-          data: t4,
+          data: t5,
           borderColor: "yellow",
           borderWidth: 2,
           fill: false,
@@ -107,7 +107,7 @@ function drawChart(count) {
         },
         {
           label: "VorlaufHaus",
-          data: t5,
+          data: t6,
           borderColor: "red",
           borderWidth: 2,
           fill: false,
@@ -115,15 +115,15 @@ function drawChart(count) {
         },
          {
           label: "Raum",
-          data: t3,
+          data: t4,
           borderColor: "orange",
           borderWidth: 2,
           fill: false,
           yAxisID: "y"
         },
          {
-          label: "neux6",
-          data: t6,
+          label: "WW",
+          data: t3,
           borderColor: "purple",
           borderWidth: 2,
           fill: false,
